@@ -26,7 +26,7 @@ function getItem(label, key, icon, children, type) {
 const items = [
     getItem(<Link to='/application/register-transaction'>Registrar hechos económicos</Link>, '1', <PlusOutlined />),
     getItem(<Link to='/application/list-transactions'>Ver hechos económicos</Link>, '2', <EyeOutlined />),
-    getItem('Cerrar sesión', '3', <CloseOutlined />)
+    getItem(<Link to='/login'>Cerrar sesión</Link>, '3', <CloseOutlined />)
 ];
 
 export default function Application() {

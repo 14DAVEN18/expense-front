@@ -92,7 +92,7 @@ export default function Login() {
 
                         <Form.Item>
                             <Button type="primary" htmlType="submit" className="login-form-button">
-                                INICIAR SESIÓN
+                                <Link to="/application">INICIAR SESIÓN</Link>
                             </Button>
                         </Form.Item>
 

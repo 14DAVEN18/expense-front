@@ -98,7 +98,7 @@ export default function Register() {
 
                         <Form.Item {...tailFormItemLayout}>
                             <Button type="primary" htmlType="submit">
-                                REGISTRAR
+                                <Link to="/application">REGISTRAR</Link>
                             </Button>
                         </Form.Item>
                     </Form>
