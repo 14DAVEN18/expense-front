@@ -1,0 +1,37 @@
+.list-transactions {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: center;
+    width: 100%;
+}
+
+.search {
+    align-items: center;
+    border-bottom: solid 1px black;
+    display: flex;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: large;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+    height: 30%;
+}
+
+.results {
+    border-bottom: solid 1px black;
+    display: flex;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: large;
+    text-align: center;
+    width: 100%;
+    height: 70%;
+}
+
+
+.ant-form {
+    align-items: center;
+    justify-content: center;
+    width: 70%;
+}
