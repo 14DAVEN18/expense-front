@@ -1,8 +1,10 @@
 import { Button, Form, Input } from 'antd';
+import { CREATE_USER } from '../../../constants/constants';
 
 import React, { useEffect , useRef, useState} from 'react';
+import axios from "axios";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import 'antd/dist/antd.css';
 import './register.css';
@@ -12,6 +14,7 @@ export default function Register() {
     const ref = useRef(null);
     const [height, setHeight] = useState(0);
     const [width, setWidth] = useState(0);
+    const navigation = useNavigate();
 
     useEffect(() => {
         setHeight(ref.current.offsetHeight);
@@ -36,7 +39,36 @@ export default function Register() {
     const [form] = Form.useForm();
 
     const onFinish = (values) => {
-        console.log('Received values of form: ', values);
+        try {
+            axios.post (
+                CREATE_USER,
+                {
+                    values
+                },
+                {
+                    headers: 
+                    {
+                        'Content-Type': 'application/json',
+                        withCredentials: true,
+                        key: 1,
+                        email: values.email,
+                        username: values.username,
+                        password: values.password
+                    }
+                })
+                .then(({data}) => 
+                {
+                    localStorage.setItem("message" , data.message)
+                    if (data.created) {
+                        navigation("/login");
+                    } 
+                })
+                .catch(error => {
+                    console.log(error);
+                })
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     return (
@@ -75,9 +107,17 @@ export default function Register() {
                         </Form.Item>
 
                         <Form.Item
-                            name="nickname"
+                            name="username"
                             tooltip="Ingresa cualquier nombre de usuario que desees"
-                            rules={[{ required: true, message: 'Por favor ingresa tu nombre de usuario', whitespace: true }]}
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'El nombre de usuario debe tener entre 8 y 16 caracteres',
+                                    whitespace: true,
+                                    min: 8,
+                                    max: 15
+                                }
+                            ]}
                         >
                             <Input placeholder='Nombre de usuario'/>
                         </Form.Item>
@@ -89,6 +129,8 @@ export default function Register() {
                             {
                                 required: true,
                                 message: 'Por favor ingrese su contraseña',
+                                min: 8,
+                                max: 15
                             },
                             ]}
                             hasFeedback
@@ -98,7 +140,7 @@ export default function Register() {
 
                         <Form.Item {...tailFormItemLayout}>
                             <Button type="primary" htmlType="submit">
-                                <Link to="/application">REGISTRAR</Link>
+                            REGISTRAR
                             </Button>
                         </Form.Item>
                     </Form>

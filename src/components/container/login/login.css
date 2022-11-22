@@ -42,3 +42,11 @@
 .bottom .ant-input-affix-wrapper {
   width: 70%;
 }
+
+.error-message {
+  border: 1px solid red;
+  background-color: rgb(255, 184, 184);
+  border-radius: 2%;
+  width: 50%;
+  height: 30px;
+}

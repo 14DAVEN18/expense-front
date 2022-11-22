@@ -5,8 +5,8 @@ import
     PlusOutlined
 } from '@ant-design/icons';
 
-import { Button, Menu } from 'antd';
-import { Link, Outlet } from "react-router-dom";
+import { Menu } from 'antd';
+import { Link, Outlet, useNavigate } from "react-router-dom";
 
 import React, { useEffect , useRef, useState} from 'react';
 
@@ -23,10 +23,14 @@ function getItem(label, key, icon, children, type) {
     };
 }
 
+function logOut() {
+    localStorage.clear();
+}
+
 const items = [
     getItem(<Link to='/application/register-transaction'>Registrar hechos económicos</Link>, '1', <PlusOutlined />),
     getItem(<Link to='/application/list-transactions'>Ver hechos económicos</Link>, '2', <EyeOutlined />),
-    getItem(<Link to='/login'>Cerrar sesión</Link>, '3', <CloseOutlined />)
+    getItem(<Link to='/login' onClick={logOut}>Cerrar sesión</Link>, '3', <CloseOutlined />)
 ];
 
 export default function Application() {
@@ -34,10 +38,15 @@ export default function Application() {
     const ref = useRef(null);
     const [height, setHeight] = useState(0);
     const [width, setWidth] = useState(0);
+    const navigation = useNavigate();
+
+    
 
     useEffect(() => {
         setHeight(ref.current.offsetHeight);
         setWidth(ref.current.offsetWidth);
+        if(localStorage.getItem("user_id") === null)
+            navigation("/login")
     }, [])
 
     return (

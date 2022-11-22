@@ -1,8 +1,9 @@
 import React, { useEffect , useRef, useState} from 'react';
-
 import { Button, Form, Select } from 'antd';
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-import { months, years } from '../../../../constants/constants';
+import { months, years, GET_TRANSACTIONS, NO_TRANSACTIONS_LISTED } from '../../../../constants/constants';
 
 import 'antd/dist/antd.css';
 import './list-transactions.css';
@@ -12,15 +13,72 @@ export default function ListTransactions() {
     const ref = useRef(null);
     const [height, setHeight] = useState(0);
     const [width, setWidth] = useState(0);
-    const [visible, setVisible] = useState(false);
+    const navigation = useNavigate();
+    const [message, setMessage] = useState("")
+    const [empty, setEmpty] = useState(false);
+
+    const [transactions, setTransactions] = useState()
 
     useEffect(() => {
         setHeight(ref.current.offsetHeight);
         setWidth(ref.current.offsetWidth);
+        if(localStorage.getItem("user_id") === null)
+            navigation("/login")
     }, [])
 
     const onFinish = (values) => {
-        console.log('Received values of form: ', values);
+        setEmpty(false)
+        setTransactions(undefined)
+        if(localStorage.getItem("user_id") === null)
+            navigation("/login")
+        if (values.type == 'saving') {
+            try {
+                axios.get (
+                    GET_TRANSACTIONS, {
+                    params: {
+                        user: localStorage.getItem("user_id"),
+                        type: values.type
+                    }}
+                    )
+                    .then(({data}) => {
+                        setTransactions(data)
+                        if (data.length === 0) {
+                            setEmpty(true)
+                            setMessage(NO_TRANSACTIONS_LISTED)
+                        }
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    })
+            } catch (error) {
+                console.log(error);
+            }
+        } else {
+            try {
+                axios.get (
+                    GET_TRANSACTIONS, {
+                    params: {
+                        user: localStorage.getItem("user_id"),
+                        type: values.type,
+                        year: values.year,
+                        month: values.month
+                    }}
+                    )
+                    .then(({data}) => {
+                        setTransactions(data)
+                        if (data.length === 0) {
+                            setEmpty(true)
+                            setMessage(NO_TRANSACTIONS_LISTED)
+                        }
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    })
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        
     };
 
     return (
@@ -37,7 +95,7 @@ export default function ListTransactions() {
                     onFinish={onFinish}
                 >
                     <Form.Item
-                        name="transaction"
+                        name="type"
                         rules={[
                             {
                                 message: 'El tipo seleccionado no es válido',
@@ -56,10 +114,10 @@ export default function ListTransactions() {
                     </Form.Item>
 
                     <Form.Item
-                        shouldUpdate = {(prevValues, currentValues) => prevValues.transaction !== currentValues.transaction}
+                        shouldUpdate = {(prevValues, currentValues) => prevValues.type !== currentValues.type}
                     >
                         {({ getFieldValue }) => 
-                            getFieldValue('transaction') === 'income' || getFieldValue('transaction') === 'expense' ? (
+                            getFieldValue('type') === 'income' || getFieldValue('type') === 'expense' ? (   
                                 <Form.Item
                                     name="year"
                                     rules={[
@@ -69,7 +127,7 @@ export default function ListTransactions() {
                                         {
                                             required: true,
                                             message: 'Por favor seleccione un año',
-                                        },
+                                        }
                                     ]}
                                 >
                                     <Select placeholder="Seleccione un año">
@@ -85,10 +143,10 @@ export default function ListTransactions() {
                     </Form.Item>
 
                     <Form.Item
-                        shouldUpdate = {(prevValues, currentValues) => prevValues.transaction !== currentValues.transaction }
+                        shouldUpdate = {(prevValues, currentValues) => prevValues.type !== currentValues.type }
                     >
                         {({ getFieldValue }) =>
-                            getFieldValue('transaction') === 'income' || getFieldValue('transaction') === 'expense' ? (
+                            getFieldValue('type') === 'income' || getFieldValue('type') === 'expense' ? (
                                 <Form.Item
                                     name="month"
                                     rules={[
@@ -103,9 +161,9 @@ export default function ListTransactions() {
                                 >
                                     <Select  placeholder="Seleccione un mes">
                                         {
-                                            months.map((month, index) => {
-                                                return <Select.Option key={`month${index}`} value={month}>{month}</Select.Option>
-                                            })
+                                            months?.map( month => (
+                                                <Select.Option key={month.key} value={month.key}>{month.month}</Select.Option>
+                                            ))
                                         }
                                     </Select>
                                 </Form.Item>
@@ -121,7 +179,32 @@ export default function ListTransactions() {
                 </Form>
             </div>
             <div className='results'>
-                Aqui va la tabla
+                {   
+                    empty && 
+                        (
+                            <div className='info-message'  onClick={() => setEmpty(false)}>
+                                <p>{message}</p>
+                            </div>
+                        )
+                }
+                <table className='list'>
+                    <thead className='list-header'>
+                        <tr>
+                            <th>Concepto</th>
+                            <th>Cantidad</th>
+                        </tr>
+                    </thead>
+                    <tbody >
+                        {
+                            transactions?.map( e => (
+                                <tr key={ e.trns_id } className='list-item'>
+                                    <td> { e.trns_concept }</td>
+                                    <td> $ { e.trns_amount }</td>
+                                </tr>
+                            ))
+                        }
+                    </tbody>
+                </table>
             </div>
         </div>
     );

@@ -27,7 +27,7 @@ export default function Container() {
         <div className="content">
           <div className='title'>
             <h1>
-                Expense Tracker
+              Expense Tracker
             </h1>
           </div>
           <Routes>
